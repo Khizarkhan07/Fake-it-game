@@ -50,7 +50,7 @@ export default function Discussion() {
               Category
             </p>
             <p className="text-xl font-bold text-white">
-              {state.currentCategory}
+              {state.activeCategory}
             </p>
           </div>
 

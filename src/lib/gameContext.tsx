@@ -9,7 +9,7 @@ import React, {
   useRef,
 } from "react";
 import { GameState, GameAction, GamePhase, Player, RoundResult } from "./types";
-import { getRandomWord } from "./words";
+import { getRandomWord, CATEGORIES } from "./words";
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -32,7 +32,8 @@ const ROUND_DURATION = 300; // 5 minutes in seconds
 const initialState: GameState = {
   phase: "lobby",
   players: [],
-  currentCategory: "Party",
+  selectedCategories: ["Party"],
+  activeCategory: "",
   secretWord: "",
   roundNumber: 0,
   currentPlayerIndex: 0,
@@ -82,8 +83,25 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case "SET_CATEGORY": {
-      return { ...state, currentCategory: action.category };
+    case "TOGGLE_CATEGORY": {
+      const cats = state.selectedCategories;
+      const has = cats.includes(action.category);
+      if (has && cats.length === 1) return state; // must keep at least one
+      return {
+        ...state,
+        selectedCategories: has
+          ? cats.filter((c) => c !== action.category)
+          : [...cats, action.category],
+      };
+    }
+
+    case "SELECT_ALL_CATEGORIES": {
+      const allNames = CATEGORIES.map((c) => c.name);
+      return { ...state, selectedCategories: allNames };
+    }
+
+    case "DESELECT_ALL_CATEGORIES": {
+      return state; // no-op, must keep at least one selected
     }
 
     case "SET_IMPOSTOR_COUNT": {
@@ -94,13 +112,14 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       if (state.players.length < 3) return state;
       const maxImpostors = Math.floor(state.players.length / 2);
       const actualCount = Math.min(state.impostorCount, maxImpostors);
-      const word = getRandomWord(state.currentCategory, state.usedWords);
+      const { word, category } = getRandomWord(state.selectedCategories, state.usedWords);
       const playersWithRoles = assignImpostors(state.players, actualCount);
       return {
         ...state,
         phase: "roleReveal",
         players: playersWithRoles,
         secretWord: word,
+        activeCategory: category,
         roundNumber: state.roundNumber + 1,
         currentPlayerIndex: 0,
         roundTimeRemaining: ROUND_DURATION,
@@ -160,7 +179,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       const result: RoundResult = {
         round: state.roundNumber,
         word: state.secretWord,
-        category: state.currentCategory,
+        category: state.activeCategory || "",
         impostorIds: impostors.map((p) => p.id),
         impostorNames: impostors.map((p) => p.name),
         impostorsCaught,

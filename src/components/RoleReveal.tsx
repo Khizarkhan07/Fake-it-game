@@ -87,7 +87,7 @@ export default function RoleReveal() {
               <ul className="space-y-1 text-left list-disc list-inside">
                 <li>Act natural during the discussion</li>
                 <li>Watch others&apos; reactions for clues about the word</li>
-                <li>Category is: <strong className="text-purple-400">{state.currentCategory}</strong></li>
+                <li>Category is: <strong className="text-purple-400">{state.selectedCategories.length === 1 ? state.selectedCategories[0] : `${state.selectedCategories.length} categories`}</strong></li>
               </ul>
             </div>
           </div>

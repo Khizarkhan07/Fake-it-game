@@ -29,7 +29,8 @@ export interface RoundResult {
 export interface GameState {
   phase: GamePhase;
   players: Player[];
-  currentCategory: string;
+  selectedCategories: string[];
+  activeCategory: string;
   secretWord: string;
   roundNumber: number;
   currentPlayerIndex: number;
@@ -42,7 +43,9 @@ export interface GameState {
 export type GameAction =
   | { type: "ADD_PLAYER"; name: string }
   | { type: "REMOVE_PLAYER"; id: string }
-  | { type: "SET_CATEGORY"; category: string }
+  | { type: "TOGGLE_CATEGORY"; category: string }
+  | { type: "SELECT_ALL_CATEGORIES" }
+  | { type: "DESELECT_ALL_CATEGORIES" }
   | { type: "SET_IMPOSTOR_COUNT"; count: number }
   | { type: "START_GAME" }
   | { type: "PLAYER_SEEN_ROLE" }

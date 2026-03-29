@@ -622,16 +622,21 @@ export const CATEGORIES: WordCategory[] = [
   },
 ];
 
-export function getRandomWord(categoryName: string, usedWords: string[]): string {
-  const category = CATEGORIES.find((c) => c.name === categoryName);
-  if (!category) return "Unknown";
+export function getRandomWord(categoryNames: string[], usedWords: string[]): { word: string; category: string } {
+  const cats = CATEGORIES.filter((c) => categoryNames.includes(c.name));
+  if (cats.length === 0) return { word: "Unknown", category: "Unknown" };
 
-  const available = category.words.filter((w) => !usedWords.includes(w));
-  if (available.length === 0) {
-    // Reset if all words used
-    return category.words[Math.floor(Math.random() * category.words.length)];
+  // Collect all available words across selected categories
+  const allAvailable = cats.flatMap((c) =>
+    c.words.filter((w) => !usedWords.includes(w)).map((w) => ({ word: w, category: c.name }))
+  );
+
+  if (allAvailable.length === 0) {
+    // Reset if all words used — pick from any selected category
+    const allWords = cats.flatMap((c) => c.words.map((w) => ({ word: w, category: c.name })));
+    return allWords[Math.floor(Math.random() * allWords.length)];
   }
-  return available[Math.floor(Math.random() * available.length)];
+  return allAvailable[Math.floor(Math.random() * allAvailable.length)];
 }
 
 export function getRandomCategory(): string {

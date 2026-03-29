@@ -198,27 +198,59 @@ export default function Lobby() {
 
           {/* Category Selection */}
           <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-              Category
-            </h2>
-            <div className="grid grid-cols-3 gap-2">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.name}
-                  onClick={() =>
-                    dispatch({ type: "SET_CATEGORY", category: cat.name })
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
+                Categories ({state.selectedCategories.length}/{CATEGORIES.length})
+              </h2>
+              <button
+                onClick={() => {
+                  if (state.selectedCategories.length === CATEGORIES.length) {
+                    // Deselect all except first
+                    for (const cat of CATEGORIES.slice(1)) {
+                      if (state.selectedCategories.includes(cat.name)) {
+                        dispatch({ type: "TOGGLE_CATEGORY", category: cat.name });
+                      }
+                    }
+                  } else {
+                    dispatch({ type: "SELECT_ALL_CATEGORIES" });
                   }
-                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all active:scale-95 ${
-                    state.currentCategory === cat.name
-                      ? "bg-purple-600/20 border-purple-500 text-purple-300"
-                      : "bg-zinc-800/50 border-zinc-700/50 text-zinc-400 hover:border-zinc-600"
-                  }`}
-                >
-                  <span className="text-xl">{cat.emoji}</span>
-                  <span className="text-xs font-medium">{cat.name}</span>
-                </button>
-              ))}
+                }}
+                className={`text-xs font-semibold px-3 py-1 rounded-full transition-all ${
+                  state.selectedCategories.length === CATEGORIES.length
+                    ? "bg-purple-500/20 text-purple-400"
+                    : "bg-zinc-800 text-zinc-400 hover:text-zinc-300"
+                }`}
+              >
+                {state.selectedCategories.length === CATEGORIES.length ? "Deselect All" : "Select All"}
+              </button>
             </div>
+            <div className="grid grid-cols-3 gap-2">
+              {CATEGORIES.map((cat) => {
+                const isSelected = state.selectedCategories.includes(cat.name);
+                return (
+                  <button
+                    key={cat.name}
+                    onClick={() =>
+                      dispatch({ type: "TOGGLE_CATEGORY", category: cat.name })
+                    }
+                    className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all active:scale-95 ${
+                      isSelected
+                        ? "bg-purple-600/20 border-purple-500 text-purple-300"
+                        : "bg-zinc-800/50 border-zinc-700/50 text-zinc-400 hover:border-zinc-600"
+                    }`}
+                  >
+                    <span className="text-xl">{cat.emoji}</span>
+                    <span className="text-xs font-medium">{cat.name}</span>
+                    {isSelected && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-zinc-500 mt-2">
+              Tap to toggle. Words will come from any selected category.
+            </p>
           </div>
 
           {/* Impostor Count */}
