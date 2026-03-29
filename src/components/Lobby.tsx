@@ -7,6 +7,7 @@ import { CATEGORIES } from "@/lib/words";
 export default function Lobby() {
   const { state, dispatch } = useGame();
   const [playerName, setPlayerName] = useState("");
+  const [showRules, setShowRules] = useState(false);
 
   const addPlayer = () => {
     if (playerName.trim()) {
@@ -43,6 +44,82 @@ export default function Lobby() {
       {/* Players Section */}
       <div className="flex-1 px-4 pb-4 overflow-auto">
         <div className="max-w-md mx-auto space-y-4">
+          {/* How to Play */}
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
+            <button
+              onClick={() => setShowRules(!showRules)}
+              className="w-full flex items-center justify-between p-4 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📖</span>
+                <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
+                  How to Play
+                </h2>
+              </div>
+              <svg
+                className={`w-5 h-5 text-zinc-500 transition-transform ${showRules ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showRules && (
+              <div className="px-4 pb-4 space-y-4">
+                <div className="h-px bg-zinc-800" />
+                
+                {/* Overview */}
+                <div>
+                  <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1.5">Overview</h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed">
+                    One or more players are secretly the <span className="text-red-400 font-semibold">Impostor</span> — they don&apos;t know the secret word! Everyone else is on the <span className="text-emerald-400 font-semibold">Team</span> and must figure out who&apos;s faking it.
+                  </p>
+                </div>
+
+                {/* Game Flow */}
+                <div>
+                  <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">Game Flow</h3>
+                  <div className="space-y-2.5">
+                    {[
+                      { step: "1", icon: "👀", title: "Role Reveal", desc: "Pass the phone around. Each player privately sees if they're on the Team (with the secret word) or the Impostor (no word)." },
+                      { step: "2", icon: "💬", title: "Discussion", desc: "Everyone takes turns giving a one-word hint about the secret word. The Impostor must bluff! Go around as many times as you like." },
+                      { step: "3", icon: "🗳️", title: "Vote", desc: "The group discusses who they think is faking it, then votes. You must vote out as many players as there are impostors." },
+                      { step: "4", icon: "🏆", title: "Results", desc: "See who was right! Team earns +100 pts per impostor caught. Impostors earn +200 pts if they survive." },
+                    ].map((item) => (
+                      <div key={item.step} className="flex gap-3">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-sm">
+                          {item.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white">{item.title}</p>
+                          <p className="text-xs text-zinc-400 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tips */}
+                <div className="bg-zinc-800/50 rounded-xl p-3">
+                  <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1.5">💡 Tips</h3>
+                  <ul className="space-y-1">
+                    {[
+                      "Impostors: give vague but plausible hints — don't be too specific or too generic.",
+                      "Team: don't make your hints too obvious, or the impostor will figure out the word!",
+                      "Watch reactions — hesitation and nervous laughs are tell-tale signs.",
+                      "With multiple impostors, they don't know who each other are.",
+                    ].map((tip, i) => (
+                      <li key={i} className="text-xs text-zinc-400 leading-relaxed flex gap-1.5">
+                        <span className="text-zinc-600 flex-shrink-0">•</span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
           {/* Add Player */}
           <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
             <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3">
